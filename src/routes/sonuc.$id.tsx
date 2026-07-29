@@ -1,7 +1,7 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PhoneFrame } from "@/components/PhoneFrame";
 import { LevelMark, levelBorderClass } from "@/components/arsa/LevelMark";
-import { results, type Verdict } from "@/lib/arsa-data";
+import { results, type Verdict, type ResultData } from "@/lib/arsa-data";
 
 export const Route = createFileRoute("/sonuc/$id")({
   head: ({ params }) => ({
@@ -76,7 +76,7 @@ function LevelMarkForVerdict({ kind }: { kind: Verdict["kind"] }) {
 }
 
 function ResultPage() {
-  const { data } = Route.useLoaderData();
+  const { data } = Route.useLoaderData() as { data: ResultData };
   const { parcel, verdict, summary, cards, questions, sources } = data;
 
   return (
