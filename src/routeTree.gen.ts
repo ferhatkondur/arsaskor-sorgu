@@ -9,9 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as CekRouteImport } from './routes/cek'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SonucIdRouteImport } from './routes/sonuc.$id'
+import { Route as ApiPublicTkgmSplatRouteImport } from './routes/api/public/tkgm.$'
 
+const CekRoute = CekRouteImport.update({
+  id: '/cek',
+  path: '/cek',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -22,35 +29,55 @@ const SonucIdRoute = SonucIdRouteImport.update({
   path: '/sonuc/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicTkgmSplatRoute = ApiPublicTkgmSplatRouteImport.update({
+  id: '/api/public/tkgm/$',
+  path: '/api/public/tkgm/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cek': typeof CekRoute
   '/sonuc/$id': typeof SonucIdRoute
+  '/api/public/tkgm/$': typeof ApiPublicTkgmSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cek': typeof CekRoute
   '/sonuc/$id': typeof SonucIdRoute
+  '/api/public/tkgm/$': typeof ApiPublicTkgmSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cek': typeof CekRoute
   '/sonuc/$id': typeof SonucIdRoute
+  '/api/public/tkgm/$': typeof ApiPublicTkgmSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sonuc/$id'
+  fullPaths: '/' | '/cek' | '/sonuc/$id' | '/api/public/tkgm/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/sonuc/$id'
-  id: '__root__' | '/' | '/sonuc/$id'
+  to: '/' | '/cek' | '/sonuc/$id' | '/api/public/tkgm/$'
+  id: '__root__' | '/' | '/cek' | '/sonuc/$id' | '/api/public/tkgm/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CekRoute: typeof CekRoute
   SonucIdRoute: typeof SonucIdRoute
+  ApiPublicTkgmSplatRoute: typeof ApiPublicTkgmSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/cek': {
+      id: '/cek'
+      path: '/cek'
+      fullPath: '/cek'
+      preLoaderRoute: typeof CekRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -65,13 +92,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SonucIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/tkgm/$': {
+      id: '/api/public/tkgm/$'
+      path: '/api/public/tkgm/$'
+      fullPath: '/api/public/tkgm/$'
+      preLoaderRoute: typeof ApiPublicTkgmSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CekRoute: CekRoute,
   SonucIdRoute: SonucIdRoute,
+  ApiPublicTkgmSplatRoute: ApiPublicTkgmSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
